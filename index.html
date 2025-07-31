@@ -1,101 +1,927 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Collaboration Collective</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-    }
-    .game-container {
-      max-width: 700px;
-      margin: 4rem auto;
-      padding: 2rem;
-      background-color: white;
-      border-radius: 1rem;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    .action-button {
-      background-color: #4f46e5;
-      color: white;
-      padding: 0.75rem 1.5rem;
-      border-radius: 0.75rem;
-      font-weight: 600;
-      transition: background-color 0.3s ease;
-      cursor: pointer;
-      margin-top: 1rem;
-      border: none;
-    }
-    .action-button:hover {
-      background-color: #4338ca;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Collaboration Collective: Real-time Communication Challenge</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+        }
+        .game-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #ffffff;
+            border-radius: 1.5rem; /* More rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0; /* Subtle border */
+        }
+        .button-choice {
+            background-color: #4f46e5; /* Indigo */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem; /* Rounded */
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .button-choice:hover {
+            background-color: #4338ca; /* Darker indigo */
+            transform: translateY(-2px);
+        }
+        .button-choice:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .action-button {
+            background-color: #10b981; /* Green */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-left: 0.5rem;
+            margin-right: 0.5rem;
+        }
+        .action-button:hover {
+            background-color: #059669; /* Darker green */
+            transform: translateY(-2px);
+        }
+        .action-button:active {
+            transform: translateY(0);
+            box-shadow: 0 22px 4px rgba(0, 0, 0, 0.1);
+        }
+        .reset-button {
+            background-color: #ef4444; /* Red */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-left: 0.5rem;
+            margin-right: 0.5rem;
+        }
+        .reset-button:hover {
+            background-color: #dc2626; /* Darker red */
+            transform: translateY(-2px);
+        }
+        .reset-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .concept-tag {
+            display: inline-block;
+            background-color: #d1fae5; /* Light green */
+            color: #065f46; /* Dark green text */
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .outcome-message.success {
+            color: #10b981; /* Green */
+            font-weight: 700;
+        }
+        .outcome-message.neutral {
+            color: #f59e0b; /* Amber */
+            font-weight: 700;
+        }
+        .outcome-message.failure {
+            color: #ef4444; /* Red */
+            font-weight: 700;
+        }
+        /* Message Box Styling */
+        .message-box-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .message-box-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .message-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        .message-box-overlay.active .message-box {
+            transform: scale(1);
+        }
+        .message-box h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+        .message-box p {
+            margin-bottom: 1.5rem;
+            color: #4b5563;
+        }
+        .message-box button {
+            background-color: #4f46e5;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+        .message-box button:hover {
+            background-color: #4338ca;
+        }
+        /* Character SVG styling */
+        .character-svg {
+            width: 60px; /* Adjust size as needed */
+            height: 60px;
+            margin-bottom: 0.25rem;
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
-  <div class="game-container">
-    <h1 class="text-3xl font-bold text-indigo-700 mb-4">The Collaboration Collective</h1>
-    <p class="text-sm text-gray-600 mb-2">User ID: <span id="user-id-display">Loading...</span></p>
-    <p class="text-gray-700 mb-4">Welcome to the game! Begin by authenticating anonymously and watching your status update live.</p>
-    <button class="action-button" onclick="beginGame()">Start Game</button>
-    <p id="game-message" class="mt-4 text-green-600 font-semibold"></p>
-  </div>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="game-container">
+        <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">The Collaboration Collective: Real-time Communication Challenge</h1>
+        
+        <!-- User ID Display -->
+        <div class="text-center text-sm text-gray-500 mb-4">
+            Your User ID: <span id="user-id-display">Loading...</span>
+        </div>
 
-  <script type="module">
-    // Firebase imports from CDN
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
+        <!-- Removed: Current Game ID Display (now more prominent for sharing) -->
+        <!-- <div class="text-center text-lg text-gray-600 mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            Share this Game ID: <span id="current-game-id-display" class="font-bold text-indigo-700">Loading...</span>
+            <button id="copy-game-id-button" class="action-button text-sm px-3 py-1 ml-2">Copy ID</button>
+        </div> -->
 
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyBFwZB9hPCbbvoI50buMTbB1kjqbqDHhgk",
-      authDomain: "the-collaboration-collective.firebaseapp.com",
-      projectId: "the-collaboration-collective",
-      storageBucket: "the-collaboration-collective.appspot.com",
-      messagingSenderId: "187692404556",
-      appId: "1:187692404556:web:43894d9f69a02b0755c9e9",
-      measurementId: "G-GR3N86G61X"
-    };
+        <!-- Score Tracking Display -->
+        <div class="flex justify-around mb-4 text-gray-700 font-semibold">
+            <div class="bg-blue-100 p-2 rounded-lg flex-1 text-center mr-2">
+                Cohesion: <span id="cohesion-score">50</span>/100
+            </div>
+            <div class="bg-green-100 p-2 rounded-lg flex-1 text-center ml-2">
+                Task Progress: <span id="task-progress">0</span>/100
+            </div>
+        </div>
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+        <div id="game-display" class="bg-blue-50 p-6 rounded-lg mb-6 shadow-inner border border-blue-200">
+            <p id="scenario-text" class="text-lg text-gray-700 leading-relaxed mb-4"></p>
+            <div id="character-expressions" class="flex justify-around items-center mb-4">
+                <!-- Character expressions (SVGs) will be dynamically added here -->
+            </div>
+            <div id="concept-tags" class="flex flex-wrap gap-2 mb-4">
+                <!-- Communication concepts will be displayed here -->
+            </div>
+            <p id="outcome-text" class="text-md text-gray-600 italic mt-4"></p>
+        </div>
 
-    let userId = null;
+        <div id="choices-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <!-- Choices will be dynamically added here -->
+        </div>
 
-    onAuthStateChanged(auth, async user => {
-      if (user) {
-        userId = user.uid;
-        document.getElementById("user-id-display").textContent = userId;
-        document.getElementById("game-message").textContent = "Authenticated successfully.";
-      } else {
-        await signInAnonymously(auth);
-      }
-    });
+        <div class="text-center flex justify-center flex-wrap gap-4">
+            <button id="save-button" class="action-button">Save Game</button>
+            <button id="reset-button" class="reset-button">Start New Game</button>
+        </div>
 
-    window.beginGame = async () => {
-      if (!userId) {
-        document.getElementById("game-message").textContent = "User not yet authenticated.";
-        return;
-      }
-      // Optional: Save a starting game state
-      const gameRef = doc(db, "gameSessions", userId);
-      await setDoc(gameRef, {
-        startedAt: new Date(),
-        userId: userId,
-        scenario: "intro",
-        cohesion: 50,
-        progress: 0
-      });
-      document.getElementById("game-message").textContent = "Game started!";
-    };
-  </script>
+        <div id="game-reflection" class="mt-8 pt-6 border-t border-gray-200 hidden">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Game Reflection: Communication Concepts</h2>
+            <p class="text-gray-700 mb-4">This game demonstrated several key small group communication concepts. Your choices influenced the group's dynamics and outcomes.</p>
+            <ul class="list-disc list-inside text-gray-700">
+                <li class="mb-2">**Conflict Management Styles:** You experienced scenarios where different styles (Competing, Compromising, Collaborating, Avoiding, Accommodating) were at play, and your choices determined which style dominated or was attempted.</li>
+                <li class="mb-2">**Group Cohesion:** The "Cohesion Score" reflected how well the group was working together. Positive communication choices generally increased cohesion, while negative ones decreased it.</li>
+                <li class="mb-2">**Decision-Making:** The game presented dilemmas requiring group decisions, highlighting how different communication approaches can lead to effective or ineffective outcomes.</li>
+                <li class="mb-2">**Roles:** Characters naturally took on roles (e.g., Anthony as a task leader, Martin as a harmonizer), and your interactions could reinforce or challenge these roles.</li>
+                <li class="mb-2">**Communication Climate:** Your interactions directly impacted whether the group experienced a defensive or supportive communication climate.</li>
+                <li class="mb-2">**Groupthink:** Some paths demonstrated how a desire for harmony can lead to poor decision-making if dissenting opinions are suppressed.</li>
+                <li class="mb-2">**Norms:** The team's unstated rules for interaction (norms) were influenced by your choices, affecting future behavior.</li>
+            </ul>
+            <p class="text-gray-700 mt-4">Remember, effective small group communication is about navigating these dynamics to achieve shared goals while maintaining positive relationships.</p>
+        </div>
+    </div>
+
+    <!-- Message Box Overlay -->
+    <div id="message-box-overlay" class="message-box-overlay">
+        <div class="message-box">
+            <h3 id="message-box-title"></h3>
+            <p id="message-box-text"></p>
+            <button id="message-box-close-button">OK</button>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need 
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"; 
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // MANDATORY GLOBAL VARIABLES provided by the Canvas environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+
+        let app;
+        let analytics;
+        let db;
+        let auth;
+        let userId; 
+        let unsubscribeFromGame = null;
+
+        let currentScenarioId = 'intro';
+        let cohesionScore = 50;
+        let taskProgress = 0;
+        let gameEnded = false;
+        let currentGameId = null;
+
+        const scenarioText = document.getElementById('scenario-text');
+        const characterExpressions = document.getElementById('character-expressions');
+        const conceptTagsContainer = document.getElementById('concept-tags');
+        const outcomeText = document.getElementById('outcome-text');
+        const choicesContainer = document.getElementById('choices-container');
+        const resetButton = document.getElementById('reset-button');
+        const saveButton = document.getElementById('save-button');
+        const gameReflection = document.getElementById('game-reflection');
+        const cohesionScoreDisplay = document.getElementById('cohesion-score');
+        const taskProgressDisplay = document.getElementById('task-progress');
+        const userIdDisplay = document.getElementById('user-id-display');
+
+        const messageBoxOverlay = document.getElementById('message-box-overlay');
+        const messageBoxTitle = document.getElementById('message-box-title');
+        const messageBoxText = document.getElementById('message-box-text');
+        const messageBoxCloseButton = document.getElementById('message-box-close-button');
+
+        function showMessageBox(title, message) {
+            messageBoxTitle.textContent = title;
+            messageBoxText.textContent = message;
+            messageBoxOverlay.classList.add('active');
+        }
+
+        function hideMessageBox() {
+            messageBoxOverlay.classList.remove('active');
+        }
+
+        messageBoxCloseButton.addEventListener('click', hideMessageBox);
+
+        const characterSVGs = {
+            Anthony: {
+                base: `<svg class="character-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="#fca5a5"/><circle cx="35" cy="40" r="5" fill="#4b5563"/><circle cx="65" cy="40" r="5" fill="#4b5563"/>`,
+                happy: `<path d="M30 65 Q50 75 70 65" stroke="#4b5563" stroke-width="4" fill="none"/></svg>`, // Smile
+                neutral: `<line x1="30" y1="65" x2="70" y2="65" stroke="#4b5563" stroke-width="4"/></svg>`, // Flat line
+                tense: `<path d="M30 65 Q50 55 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 30 L40 20 M60 20 L70 30" stroke="#4b5563" stroke-width="3"/></svg>`, // Frown with furrowed brows
+                frustrated: `<path d="M30 65 Q50 50 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 30 L40 20 M60 20 L70 30" stroke="#4b5563" stroke-width="3"/></svg>`, // Deeper frown, more furrowed
+                thoughtful: `<path d="M30 65 Q50 70 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><circle cx="50" cy="75" r="3" fill="#4b5563"/></svg>`, // Slight smile, hand on chin (represented by dot)
+                stressed: `<path d="M30 65 Q50 50 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 30 L40 20 M60 20 L70 30" stroke="#4b5563" stroke-width="3"/></svg>`, // Similar to frustrated
+                determined: `<path d="M30 65 Q50 75 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><line x1="30" y1="35" x2="40" y2="35" stroke="#4b5563" stroke-width="3"/><line x1="60" y1="35" x2="70" y2="35" stroke="#4b5563" stroke-width="3"/></svg>`,
+                relieved: `<path d="M30 65 Q50 75 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 35 L40 30 M60 30 L70 35" stroke="#4b5563" stroke-width="3"/></svg>`
+            },
+            Michele: {
+                base: `<svg class="character-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="#93c5fd"/><circle cx="35" cy="40" r="5" fill="#4b5563"/><circle cx="65" cy="40" r="5" fill="#4b5563"/>`,
+                happy: `<path d="M30 65 Q50 75 70 65" stroke="#4b5563" stroke-width="4" fill="none"/></svg>`,
+                neutral: `<line x1="30" y1="65" x2="70" y2="65" stroke="#4b5563" stroke-width="4"/></svg>`,
+                tense: `<path d="M30 65 Q50 55 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 30 L40 20 M60 20 L70 30" stroke="#4b5563" stroke-width="3"/></svg>`,
+                frustrated: `<path d="M30 65 Q50 50 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 30 L40 20 M60 20 L70 30" stroke="#4b5563" stroke-width="3"/></svg>`,
+                thoughtful: `<path d="M30 65 Q50 70 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><circle cx="50" cy="75" r="3" fill="#4b5563"/></svg>`,
+                stressed: `<path d="M30 65 Q50 50 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 30 L40 20 M60 20 L70 30" stroke="#4b5563" stroke-width="3"/></svg>`,
+                determined: `<path d="M30 65 Q50 75 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><line x1="30" y1="35" x2="40" y2="35" stroke="#4b5563" stroke-width="3"/><line x1="60" y1="35" x2="70" y2="35" stroke="#4b5563" stroke-width="3"/></svg>`,
+                relieved: `<path d="M30 65 Q50 75 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 35 L40 30 M60 30 L70 35" stroke="#4b5563" stroke-width="3"/></svg>`
+            },
+            Tara: {
+                base: `<svg class="character-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="#a7f3d0"/><circle cx="35" cy="40" r="5" fill="#4b5563"/><circle cx="65" cy="40" r="5" fill="#4b5563"/>`,
+                happy: `<path d="M30 65 Q50 75 70 65" stroke="#4b5563" stroke-width="4" fill="none"/></svg>`,
+                neutral: `<line x1="30" y1="65" x2="70" y2="65" stroke="#4b5563" stroke-width="4"/></svg>`,
+                tense: `<path d="M30 65 Q50 55 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 30 L40 20 M60 20 L70 30" stroke="#4b5563" stroke-width="3"/></svg>`,
+                frustrated: `<path d="M30 65 Q50 50 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 30 L40 20 M60 20 L70 30" stroke="#4b5563" stroke-width="3"/></svg>`,
+                thoughtful: `<path d="M30 65 Q50 70 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><circle cx="50" cy="75" r="3" fill="#4b5563"/></svg>`,
+                stressed: `<path d="MM30 65 Q50 50 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 30 L40 20 M60 20 L70 30" stroke="#4b5563" stroke-width="3"/></svg>`,
+                determined: `<path d="M30 65 Q50 75 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><line x1="30" y1="35" x2="40" y2="35" stroke="#4b5563" stroke-width="3"/><line x1="60" y1="35" x2="70" y2="35" stroke="#4b5563" stroke-width="3"/></svg>`,
+                relieved: `<path d="M30 65 Q50 75 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 35 L40 30 M60 30 L70 35" stroke="#4b5563" stroke-width="3"/></svg>`
+            },
+            Emily: {
+                base: `<svg class="character-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="#fbcfe8"/><circle cx="35" cy="40" r="5" fill="#4b5563"/><circle cx="65" cy="40" r="5" fill="#4b5563"/>`,
+                happy: `<path d="M30 65 Q50 75 70 65" stroke="#4b5563" stroke-width="4" fill="none"/></svg>`,
+                neutral: `<line x1="30" y1="65" x2="70" y2="65" stroke="#4b5563" stroke-width="4"/></svg>`,
+                tense: `<path d="M30 65 Q50 55 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 30 L40 20 M60 20 L70 30" stroke="#4b5563" stroke-width="3"/></svg>`,
+                frustrated: `<path d="M30 65 Q50 50 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 30 L40 20 M60 20 L70 30" stroke="#4b5563" stroke-width="3"/></svg>`,
+                thoughtful: `<path d="M30 65 Q50 70 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><circle cx="50" cy="75" r="3" fill="#4b5563"/></svg>`,
+                stressed: `<path d="M30 65 Q50 50 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 30 L40 20 M60 20 L70 30" stroke="#4b5563" stroke-width="3"/></svg>`,
+                determined: `<path d="M30 65 Q50 75 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><line x1="30" y1="35" x2="40" y2="35" stroke="#4b5563" stroke-width="3"/><line x1="60" y1="35" x2="70" y2="35" stroke="#4b5563" stroke-width="3"/></svg>`,
+                relieved: `<path d="M30 65 Q50 75 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 35 L40 30 M60 30 L70 35" stroke="#4b5563" stroke-width="3"/></svg>`
+            },
+            Andric: {
+                base: `<svg class="character-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="#bfdbfe"/><circle cx="35" cy="40" r="5" fill="#4b5563"/><circle cx="65" cy="40" r="5" fill="#4b5563"/>`,
+                happy: `<path d="M30 65 Q50 75 70 65" stroke="#4b5563" stroke-width="4" fill="none"/></svg>`,
+                neutral: `<line x1="30" y1="65" x2="70" y2="65" stroke="#4b5563" stroke-width="4"/></svg>`,
+                tense: `<path d="M30 65 Q50 55 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 30 L40 20 M60 20 L70 30" stroke="#4b5563" stroke-width="3"/></svg>`,
+                frustrated: `<path d="M30 65 Q50 50 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 30 L40 20 M60 20 L70 30" stroke="#4b5563" stroke-width="3"/></svg>`,
+                thoughtful: `<path d="M30 65 Q50 70 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><circle cx="50" cy="75" r="3" fill="#4b5563"/></svg>`,
+                stressed: `<path d="M30 65 Q50 50 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 30 L40 20 M60 20 L70 30" stroke="#4b5563" stroke-width="3"/></svg>`,
+                determined: `<path d="M30 65 Q50 75 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><line x1="30" y1="35" x2="40" y2="35" stroke="#4b5563" stroke-width="3"/><line x1="60" y1="35" x2="70" y2="35" stroke="#4b5563" stroke-width="3"/></svg>`,
+                relieved: `<path d="M30 65 Q50 75 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 35 L40 30 M60 30 L70 35" stroke="#4b5563" stroke-width="3"/></svg>`
+            },
+            Martin: {
+                base: `<svg class="character-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="#c4b5fd"/><circle cx="35" cy="40" r="5" fill="#4b5563"/><circle cx="65" cy="40" r="5" fill="#4b5563"/>`,
+                happy: `<path d="M30 65 Q50 75 70 65" stroke="#4b5563" stroke-width="4" fill="none"/></svg>`,
+                neutral: `<line x1="30" y1="65" x2="70" y2="65" stroke="#4b5563" stroke-width="4"/></svg>`,
+                tense: `<path d="M30 65 Q50 55 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 30 L40 20 M60 20 L70 30" stroke="#4b5563" stroke-width="3"/></svg>`,
+                frustrated: `<path d="M30 65 Q50 50 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 30 L40 20 M60 20 L70 30" stroke="#4b5563" stroke-width="3"/></svg>`,
+                thoughtful: `<path d="M30 65 Q50 70 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><circle cx="50" cy="75" r="3" fill="#4b5563"/></svg>`,
+                stressed: `<path d="M30 65 Q50 50 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 30 L40 20 M60 20 L70 30" stroke="#4b5563" stroke-width="3"/></svg>`,
+                determined: `<path d="M30 65 Q50 75 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><line x1="30" y1="35" x2="40" y2="35" stroke="#4b5563" stroke-width="3"/><line x1="60" y1="35" x2="70" y2="35" stroke="#4b5563" stroke-width="3"/></svg>`,
+                relieved: `<path d="M30 65 Q50 75 70 65" stroke="#4b5563" stroke-width="4" fill="none"/><path d="M30 35 L40 30 M60 30 L70 35" stroke="#4b5563" stroke-width="3"/></svg>`
+            }
+        };
+
+        function getCharacterSVG(characterName, mood) {
+            const char = characterSVGs[characterName];
+            if (char && char.base && char[mood]) {
+                return char.base + char[mood];
+            }
+            return char.base + char.neutral;
+        }
+
+        const scenarios = {
+            intro: {
+                text: "Welcome to 'The Collaboration Collective' team! You're the newest member, joining Anthony (the determined editor), Michele (the ambitious investigative reporter), Martin (the peacekeeper), and Emily & Andric (the quiet but observant researchers). Your first task: brainstorm ideas for the next big front-page story.",
+                choices: [
+                    { text: "Suggest a bold, controversial topic.", next: 'brainstorm_bold', concepts: ['Initiator-Contributor', 'Task Leader'] },
+                    { text: "Ask what everyone else is thinking first.", next: 'brainstorm_listen', concepts: ['Information Seeker', 'Active Listening'] },
+                    { text: "Propose a safe, easy topic.", next: 'brainstorm_safe', concepts: ['Harmonizer', 'Avoiding Conflict'] }
+                ],
+                moods: { Anthony: 'determined', Michele: 'thoughtful', Martin: 'neutral', Emily: 'neutral', Andric: 'neutral' }
+            },
+            brainstorm_bold: {
+                text: "Anthony seems impressed by your initiative, but Michele immediately jumps in. 'That's too risky! We need something with real journalistic integrity!'",
+                choices: [
+                    { text: "Stand firm on your bold idea.", next: 'conflict_competing', concepts: ['Competing Style', 'Defensive Communication Climate'], cohesionChange: -10 },
+                    { text: "Try to find common ground with Michele.", next: 'conflict_compromise', concepts: ['Compromising Style', 'Supportive Communication Climate'], cohesionChange: +5 }
+                ],
+                moods: { Anthony: 'happy', Michele: 'frustrated', Martin: 'stressed', Emily: 'neutral', Andric: 'neutral' }
+            },
+            brainstorm_listen: {
+                text: "Anthony appreciates you seeking input. Michele immediately pitches a complex investigative piece. Anthony counters, 'Michele, we don't have time for a full investigation! We need something quick, a human interest piece, maybe the new library hours!'",
+                choices: [
+                    { text: "Support Anthony's idea.", next: 'conflict_anthony', concepts: ['Coalition Forming', 'Competing Style'], cohesionChange: -5 },
+                    { text: "Support Michele's idea.", next: 'conflict_michele', concepts: ['Coalition Forming', 'Competing Style'], cohesionChange: -5 },
+                    { text: "Suggest a poll on library hours, then Michele can research the food thing.", next: 'conflict_martin_compromise', concepts: ['Compromising Style', 'Avoiding Style'], cohesionChange: +10 }
+                ],
+                moods: { Anthony: 'tense', Michele: 'tense', Martin: 'stressed', Emily: 'neutral', Andric: 'neutral' }
+            },
+            brainstorm_safe: {
+                text: "Anthony looks a little disappointed, and Michele sighs. Martin, however, seems relieved. 'That's a good idea for a quick win!'",
+                choices: [
+                    { text: "Stick with the safe topic, avoid conflict.", next: 'safe_topic_chosen', concepts: ['Avoiding Style', 'Groupthink', 'Norms'], cohesionChange: +5, taskChange: +10 },
+                    { text: "Push for a more ambitious idea, despite resistance.", next: 'push_ambitious', concepts: ['Initiator-Contributor', 'Challenging Norms'], cohesionChange: -5 }
+                ],
+                moods: { Anthony: 'neutral', Michele: 'neutral', Martin: 'happy', Emily: 'neutral', Andric: 'neutral' }
+            },
+            conflict_competing: {
+                text: "You and Michele are now in a heated debate. Anthony tries to mediate, but the tension is high. The brainstorming session grinds to a halt.",
+                choices: [
+                    { text: "Apologize and try to de-escalate.", next: 'de_escalate', concepts: ['Accommodating Style', 'Harmonizer', 'Supportive Communication Climate'], cohesionChange: +15 },
+                    { text: "Keep arguing your point.", next: 'game_over_conflict', concepts: ['Competing Style', 'Defensive Communication Climate'], cohesionChange: -20 }
+                ],
+                moods: { Anthony: 'stressed', Michele: 'frustrated', Martin: 'stressed', Emily: 'tense', Andric: 'tense' }
+            },
+            conflict_compromise: {
+                text: "You suggest combining elements of your idea with Michele's. She seems to consider it. Anthony nods approvingly.",
+                choices: [
+                    { text: "Elaborate on the compromise.", next: 'compromise_success', concepts: ['Collaborating Style', 'Supportive Communication Climate', 'Consensus'], cohesionChange: +15, taskChange: +20 },
+                    { text: "Let Michele take the lead on the combined idea.", next: 'accommodate_michele', concepts: ['Accommodating Style', 'Follower'], cohesionChange: +5 }
+                ],
+                moods: { Anthony: 'happy', Michele: 'thoughtful', Martin: 'relieved', Emily: 'neutral', Andric: 'neutral' }
+            },
+            conflict_anthony: {
+                text: "You side with Anthony, and Michele looks frustrated. The room feels tense. Anthony quickly moves on, but Michele seems disengaged.",
+                choices: [
+                    { text: "Try to smooth things over with Michele later.", next: 'repair_relationship', concepts: ['Relationship-Oriented Role', 'Harmonizer'], cohesionChange: +10 },
+                    { text: "Ignore Michele and focus on Anthony's plan.", next: 'alienate_michele', concepts: ['Avoiding Conflict', 'Groupthink'], cohesionChange: -15 }
+                ],
+                moods: { Anthony: 'determined', Michele: 'frustrated', Martin: 'stressed', Emily: 'neutral', Andric: 'neutral' }
+            },
+            conflict_michele: {
+                text: "You side with Michele, and Anthony looks annoyed. He crosses his arms. The discussion becomes strained.",
+                choices: [
+                    { text: "Try to smooth things over with Anthony later.", next: 'repair_relationship', concepts: ['Relationship-Oriented Role', 'Harmonizer'], cohesionChange: +10 },
+                    { text: "Ignore Anthony and focus on Michele's plan.", next: 'alienate_anthony', concepts: ['Avoiding Conflict', 'Groupthink'], cohesionChange: -15 }
+                ],
+                moods: { Anthony: 'frustrated', Michele: 'determined', Martin: 'stressed', Emily: 'neutral', Andric: 'neutral' }
+            },
+            conflict_martin_compromise: {
+                text: "Martin looks relieved, and Anthony and Michele grudgingly agree to consider it. It's not perfect, but the tension eases.",
+                choices: [
+                    { text: "Help Martin flesh out the compromise idea.", next: 'compromise_success', concepts: ['Collaborating Style', 'Supportive Communication Climate', 'Consensus'], cohesionChange: +20, taskChange: +25 },
+                    { text: "Let Martin handle it from here.", next: 'avoid_responsibility', concepts: ['Social Loafing', 'Avoiding Style'], cohesionChange: -5 }
+                ],
+                moods: { Anthony: 'neutral', Michele: 'neutral', Martin: 'happy', Emily: 'neutral', Andric: 'neutral' }
+            },
+            de_escalate: {
+                text: "You apologize for the heated exchange and suggest taking a short break to regroup. The tension slowly dissipates.",
+                choices: [
+                    { text: "Suggest a structured brainstorming session after the break.", next: 'structured_brainstorm', concepts: ['Procedural Role', 'Facilitator', 'Norms'], cohesionChange: +15, taskChange: +10 }
+                ],
+                moods: { Anthony: 'relieved', Michele: 'neutral', Martin: 'relieved', Emily: 'neutral', Andric: 'neutral' }
+            },
+            compromise_success: {
+                text: "By combining ideas, the team finds a viable path forward. Everyone feels heard, and morale improves. You've made significant progress on the story!",
+                choices: [
+                    { text: "Propose a clear division of labor for the next steps.", next: 'division_of_labor', concepts: ['Task-Oriented Role', 'Procedural Role', 'Norms'], cohesionChange: +10, taskChange: +15 },
+                    { text: "Suggest celebrating this small win before moving on.", next: 'celebrate_win', concepts: ['Maintenance Role', 'Group Cohesion'], cohesionChange: +15 }
+                ],
+                moods: { Anthony: 'happy', Michele: 'happy', Martin: 'happy', Emily: 'happy', Andric: 'happy' }
+            },
+            accommodate_michele: {
+                text: "You let Michele take the lead. The project moves forward, but you feel a bit sidelined. Michele seems happy though.",
+                choices: [
+                    { text: "Observe and learn from Michele's approach.", next: 'observe_michele', concepts: ['Information Seeker', 'Follower'], cohesionChange: +5, taskChange: +10 },
+                    { text: "Try to contribute more actively in the next phase.", next: 'reassert_role', concepts: ['Initiator-Contributor', 'Self-Monitoring'], cohesionChange: +10 }
+                ],
+                moods: { Anthony: 'neutral', Michele: 'happy', Martin: 'neutral', Emily: 'neutral', Andric: 'neutral' }
+            },
+            safe_topic_chosen: {
+                text: "The team quickly agrees on the safe topic. It's an easy win, but you wonder if you missed an opportunity for something more impactful.",
+                choices: [
+                    { text: "Suggest ways to make the safe topic more engaging.", next: 'enhance_safe_topic', concepts: ['Elaborator', 'Creative Thinking'], cohesionChange: +10, taskChange: +15 },
+                    { text: "Accept the decision and move on.", next: 'accept_safe_topic', concepts: ['Groupthink', 'Conformity'], cohesionChange: +5 }
+                ],
+                moods: { Anthony: 'neutral', Michele: 'neutral', Martin: 'happy', Emily: 'neutral', Andric: 'neutral' }
+            },
+            push_ambitious: {
+                text: "You push for a more ambitious idea. Anthony and Michele are still hesitant, and the discussion drags on, creating frustration.",
+                choices: [], // Leads to a failure state
+                moods: { Anthony: 'frustrated', Michele: 'frustrated', Martin: 'stressed', Emily: 'tense', Andric: 'tense' },
+                outcome: { type: 'failure', message: 'The team is stuck in conflict and progress is stalled due to lack of consensus.' }
+            },
+            repair_relationship: {
+                text: "You have a quiet chat with the alienated team member. They appreciate you reaching out, and the tension lessens slightly.",
+                choices: [
+                    { text: "Suggest a team-building activity.", next: 'team_building', concepts: ['Maintenance Role', 'Relationship-Oriented Role', 'Group Cohesion'], cohesionChange: +10 },
+                    { text: "Focus purely on the task now.", next: 'focus_task_after_repair', concepts: ['Task-Oriented Role'], cohesionChange: +5 }
+                ],
+                moods: { Anthony: 'relieved', Michele: 'relieved', Martin: 'happy', Emily: 'neutral', Andric: 'neutral' }
+            },
+            alienate_michele: {
+                text: "Michele becomes withdrawn and contributes very little to subsequent discussions. The team's overall creativity suffers.",
+                choices: [],
+                moods: { Anthony: 'determined', Michele: 'stressed', Martin: 'stressed', Emily: 'tense', Andric: 'tense' },
+                outcome: { type: 'failure', message: 'Game Over! You alienated a key member, severely impacting team performance and creativity.' }
+            },
+            alienate_anthony: {
+                text: "Anthony becomes less engaged and critical of ideas. The team lacks clear direction and struggles to make decisions.",
+                choices: [],
+                moods: { Anthony: 'stressed', Michele: 'determined', Martin: 'stressed', Emily: 'tense', Andric: 'tense' },
+                outcome: { type: 'failure', message: 'Game Over! You alienated a key member, leading to poor decision-making and lack of direction.' }
+            },
+            avoid_responsibility: {
+                text: "You step back, and Martin struggles to get Anthony and Michele fully on board with the compromise. The project limps along.",
+                choices: [],
+                moods: { Anthony: 'neutral', Michele: 'neutral', Martin: 'stressed', Emily: 'neutral', Andric: 'neutral' },
+                outcome: { type: 'failure', message: 'Game Over! Your lack of engagement led to a mediocre outcome and strained team dynamics.' }
+            },
+            structured_brainstorm: {
+                text: "With a clear agenda and ground rules, the team has a productive brainstorming session. Ideas flow freely, and you collectively decide on a strong story.",
+                choices: [
+                    { text: "Propose a clear division of labor for the next steps.", next: 'division_of_labor', concepts: ['Task-Oriented Role', 'Procedural Role', 'Norms'], cohesionChange: +10, taskChange: +15 },
+                    { text: "Suggest celebrating this small win before moving on.", next: 'celebrate_win', concepts: ['Maintenance Role', 'Group Cohesion'], cohesionChange: +15 }
+                ],
+                moods: { Anthony: 'happy', Michele: 'happy', Martin: 'happy', Emily: 'happy', Andric: 'happy' }
+            },
+            division_of_labor: {
+                text: "Roles are clearly defined, and everyone knows their responsibilities. The team is efficient and focused on execution.",
+                choices: [
+                    { text: "Regularly check in on everyone's progress.", next: 'check_in_progress', concepts: ['Monitor', 'Accountability'], cohesionChange: +5, taskChange: +20 },
+                    { text: "Trust everyone to do their part independently.", next: 'trust_independent', concepts: ['Laissez-faire Leadership', 'Autonomy'], cohesionChange: -5, taskChange: +10 }
+                ],
+                moods: { Anthony: 'determined', Michele: 'determined', Martin: 'happy', Emily: 'happy', Andric: 'happy' }
+            },
+            celebrate_win: {
+                text: "A quick celebration boosts morale significantly. Everyone feels more connected and ready for the next challenge.",
+                choices: [
+                    { text: "Transition to planning the next steps while morale is high.", next: 'structured_brainstorm', concepts: ['Task-Oriented Role', 'Transition'], cohesionChange: +10, taskChange: +10 } // Re-use structured brainstorm for planning
+                ],
+                moods: { Anthony: 'happy', Michele: 'happy', Martin: 'happy', Emily: 'happy', Andric: 'happy' }
+            },
+            observe_michele: {
+                text: "You learn a lot from Michele's investigative process, improving your own skills. The story is progressing well.",
+                choices: [
+                    { text: "Offer to assist Michele with research.", next: 'collaborate_research', concepts: ['Collaborating Style', 'Teamwork'], cohesionChange: +10, taskChange: +15 }
+                ],
+                moods: { Anthony: 'neutral', Michele: 'happy', Martin: 'neutral', Emily: 'neutral', Andric: 'neutral' }
+            },
+            reassert_role: {
+                text: "You actively contribute more in the next meeting, offering valuable insights. The team acknowledges your input.",
+                choices: [
+                    { text: "Propose leading a small sub-task.", next: 'lead_subtask', concepts: ['Emergent Leadership', 'Initiator-Contributor'], cohesionChange: +15, taskChange: +20 }
+                ],
+                moods: { Anthony: 'happy', Michele: 'neutral', Martin: 'happy', Emily: 'neutral', Andric: 'neutral' }
+            },
+            enhance_safe_topic: {
+                text: "Your suggestions add depth and interest to the safe topic, making it more impactful than initially expected. The team is impressed.",
+                choices: [],
+                moods: { Anthony: 'happy', Michele: 'happy', Martin: 'happy', Emily: 'happy', Andric: 'happy' },
+                outcome: { type: 'success', message: 'You transformed a simple idea into a compelling story! Excellent contribution.' }
+            },
+            accept_safe_topic: {
+                text: "The safe topic is completed quickly, but it's largely forgettable. You realize the team might have fallen into groupthink.",
+                choices: [],
+                moods: { Anthony: 'neutral', Michele: 'neutral', Martin: 'happy', Emily: 'neutral', Andric: 'neutral' },
+                outcome: { type: 'neutral', message: 'The task was completed, but the team missed an opportunity for innovation due to groupthink.' }
+            },
+            team_building: {
+                text: "The team-building activity helps everyone reconnect and understand each other better. Cohesion is significantly boosted!",
+                choices: [
+                    { text: "Suggest applying new communication strategies in the next task.", next: 'apply_strategies', concepts: ['Self-Correction', 'Norms'], cohesionChange: +10, taskChange: +10 }
+                ],
+                moods: { Anthony: 'happy', Michele: 'happy', Martin: 'happy', Emily: 'happy', Andric: 'happy' }
+            },
+            focus_task_after_repair: {
+                text: "You focus on the task. The repaired relationship helps, but the team still feels a bit distant, lacking deeper connection.",
+                choices: [],
+                moods: { Anthony: 'relieved', Michele: 'relieved', Martin: 'neutral', Emily: 'neutral', Andric: 'neutral' },
+                outcome: { type: 'neutral', message: 'The task was completed, but the team still has room to grow in cohesion.' }
+            },
+            check_in_progress: {
+                text: "Regular check-ins ensure everyone is on track and problems are addressed early. The project is running smoothly.",
+                choices: [],
+                moods: { Anthony: 'happy', Michele: 'happy', Martin: 'happy', Emily: 'happy', Andric: 'happy' },
+                outcome: { type: 'success', message: 'Excellent project management! The team successfully delivered the story.' }
+            },
+            trust_independent: {
+                text: "Without close monitoring, some team members fall behind, causing delays and last-minute stress. The project is completed, but it's a scramble.",
+                choices: [],
+                moods: { Anthony: 'stressed', Michele: 'stressed', Martin: 'stressed', Emily: 'neutral', Andric: 'neutral' },
+                outcome: { type: 'failure', message: 'Lack of oversight led to inefficiencies and a stressful completion.' }
+            },
+            collaborate_research: {
+                text: "Your collaborative research with Michele uncovers crucial details, making the investigative piece even stronger. You both feel a sense of shared accomplishment.",
+                choices: [],
+                moods: { Anthony: 'happy', Michele: 'happy', Martin: 'happy', Emily: 'happy', Andric: 'happy' },
+                outcome: { type: 'success', message: 'Your collaborative efforts led to an outstanding investigative report!' }
+            },
+            lead_subtask: {
+                text: "You successfully lead a sub-task, demonstrating strong leadership skills. The team trusts your abilities.",
+                choices: [],
+                moods: { Anthony: 'happy', Michele: 'happy', Martin: 'happy', Emily: 'happy', Andric: 'happy' },
+                outcome: { type: 'success', message: 'You emerged as a strong leader, contributing significantly to the team\'s success!' }
+            },
+            apply_strategies: {
+                text: "The team consciously applies new communication strategies, leading to more open discussions and better decision-making. You're becoming a high-performing group!",
+                choices: [],
+                moods: { Anthony: 'happy', Michele: 'happy', Martin: 'happy', Emily: 'happy', Andric: 'happy' },
+                outcome: { type: 'success', message: 'Your team has developed excellent communication norms and is thriving!' }
+            },
+            game_over_conflict: {
+                text: "The conflict escalates, and the team completely falls apart. No story gets published. You failed to manage the conflict effectively.",
+                choices: [],
+                moods: { Anthony: 'frustrated', Michele: 'frustrated', Martin: 'stressed', Emily: 'stressed', Andric: 'stressed' },
+                outcome: { type: 'failure', message: 'Game Over! The team disbanded due to unresolved conflict and a defensive communication climate.' }
+            }
+        };
+
+        function updateDisplay() {
+            const scenario = scenarios[currentScenarioId];
+            scenarioText.textContent = scenario.text;
+            outcomeText.textContent = '';
+
+            cohesionScoreDisplay.textContent = cohesionScore;
+            taskProgressDisplay.textContent = taskProgress;
+
+            choicesContainer.innerHTML = '';
+
+            characterExpressions.innerHTML = '';
+            for (const charName in scenario.moods) {
+                const charDiv = document.createElement('div');
+                charDiv.className = 'text-center';
+                const svgString = getCharacterSVG(charName, scenario.moods[charName]);
+                charDiv.innerHTML = `${svgString}<div class="text-sm font-semibold text-gray-600">${charName}</div>`;
+                characterExpressions.appendChild(charDiv);
+            }
+
+            conceptTagsContainer.innerHTML = '';
+            if (scenario.concepts && scenario.concepts.length > 0) {
+                scenario.concepts.forEach(concept => {
+                    const span = document.createElement('span');
+                    span.className = 'concept-tag';
+                    span.textContent = concept;
+                    conceptTagsContainer.appendChild(span);
+                });
+            }
+
+            if (scenario.choices && scenario.choices.length > 0) {
+                scenario.choices.forEach(choice => {
+                    const button = document.createElement('button');
+                    button.textContent = choice.text;
+                    button.className = 'button-choice';
+                    button.addEventListener('click', () => makeChoice(choice));
+                    choicesContainer.appendChild(button);
+                });
+            } else {
+                gameEnded = true;
+                resetButton.classList.remove('hidden');
+                saveButton.classList.add('hidden');
+                gameReflection.classList.remove('hidden');
+                if (scenario.outcome) {
+                    if (!scenario.outcome.type) {
+                        if (cohesionScore >= 80 && taskProgress >= 80) {
+                            scenario.outcome.type = 'success';
+                            scenario.outcome.message = 'Outstanding! Your team achieved high cohesion and successfully completed the task with excellent communication.';
+                        } else if (cohesionScore >= 50 && taskProgress >= 50) {
+                            scenario.outcome.type = 'neutral';
+                            scenario.outcome.message = 'A decent effort. The team completed the task, but there were some communication challenges along the way.';
+                        } else {
+                            scenario.outcome.type = 'failure';
+                            scenario.outcome.message = 'The team struggled with communication and task completion. Review your choices for improvement.';
+                        }
+                    }
+                    outcomeText.textContent = scenario.outcome.message;
+                    outcomeText.className = `text-md italic mt-4 outcome-message ${scenario.outcome.type}`;
+                }
+            }
+        }
+
+        async function makeChoice(choice) {
+            if (gameEnded) return;
+
+            if (choice.cohesionChange) {
+                cohesionScore = Math.max(0, Math.min(100, cohesionScore + choice.cohesionChange));
+            }
+            if (choice.taskChange) {
+                taskProgress = Math.max(0, Math.min(100, taskProgress + choice.taskChange));
+            }
+
+            currentScenarioId = choice.next;
+            updateDisplay();
+
+            await saveGame();
+        }
+
+        function generateGameId() {
+            return Math.random().toString(36).substring(2, 9).toUpperCase();
+        }
+
+        async function saveGame() {
+            if (!currentGameId) {
+                showMessageBox('Error', 'No game selected or created. Please create or join a game first.');
+                return;
+            }
+            if (!userId) {
+                showMessageBox('Error', 'Authentication not ready. Please wait or refresh.');
+                return;
+            }
+
+            const gameRef = doc(db, `artifacts/${appId}/public/data/games`, currentGameId);
+            const gameState = {
+                currentScenarioId: currentScenarioId,
+                cohesionScore: cohesionScore,
+                taskProgress: taskProgress,
+                lastUpdatedBy: userId,
+                timestamp: new Date()
+            };
+
+            try {
+                await setDoc(gameRef, gameState, { merge: true });
+                console.log(`Game state saved for Game ID: ${currentGameId}`);
+            } catch (error) {
+                console.error("Error saving game: ", error);
+                showMessageBox('Save Error', 'Failed to save game progress. Please try again.');
+            }
+        }
+
+        async function loadGame(gameIdToLoad) {
+            if (!userId) {
+                showMessageBox('Error', 'Authentication not ready. Please wait or refresh.');
+                return;
+            }
+
+            if (!gameIdToLoad) {
+                console.error("Attempted to load game with no ID provided.");
+                return;
+            }
+
+            if (unsubscribeFromGame) {
+                unsubscribeFromGame();
+                unsubscribeFromGame = null;
+            }
+
+            const gameRef = doc(db, `artifacts/${appId}/public/data/games`, gameIdToLoad);
+
+            try {
+                const docSnap = await getDoc(gameRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    currentScenarioId = data.currentScenarioId;
+                    cohesionScore = data.cohesionScore;
+                    taskProgress = data.taskProgress;
+                    gameEnded = false;
+                    currentGameId = gameIdToLoad;
+
+                    resetButton.classList.remove('hidden');
+                    saveButton.classList.remove('hidden');
+                    gameReflection.classList.add('hidden');
+                    updateDisplay();
+                    console.log(`Game loaded: ${currentGameId}`);
+
+                    unsubscribeFromGame = onSnapshot(gameRef, (docSnapshot) => {
+                        if (docSnapshot.exists()) {
+                            const updatedData = docSnapshot.data();
+                            if (updatedData.lastUpdatedBy !== userId) {
+                                currentScenarioId = updatedData.currentScenarioId;
+                                cohesionScore = updatedData.cohesionScore;
+                                taskProgress = updatedData.taskProgress;
+                                updateDisplay();
+                                showMessageBox('Game Updated!', `Game updated by another player.`);
+                            }
+                        } else {
+                            showMessageBox('Game Ended', 'The game you were playing has been deleted or ended by another participant.');
+                            resetGame();
+                        }
+                    }, (error) => {
+                        console.error("Error listening to game updates:", error);
+                        showMessageBox('Real-time Error', 'Failed to listen for game updates.');
+                    });
+
+                } else {
+                    console.warn(`Game ID ${gameIdToLoad} not found. Creating a new game.`);
+                    await createNewGame();
+                }
+            } catch (error) {
+                console.error("Error loading game: ", error);
+                showMessageBox('Load Error', 'Failed to load game progress. Please try again.');
+            }
+        }
+
+        async function createNewGame() {
+            if (!userId) {
+                showMessageBox('Error', 'Authentication not ready. Please wait or refresh.');
+                return;
+            }
+
+            const newGameId = generateGameId();
+            const gameRef = doc(db, `artifacts/${appId}/public/data/games`, newGameId);
+
+            const initialGameState = {
+                currentScenarioId: 'intro',
+                cohesionScore: 50,
+                taskProgress: 0,
+                lastUpdatedBy: userId,
+                timestamp: new Date()
+            };
+
+            try {
+                await setDoc(gameRef, initialGameState);
+                currentGameId = newGameId;
+                currentScenarioId = 'intro';
+                cohesionScore = 50;
+                taskProgress = 0;
+                gameEnded = false;
+
+                if (unsubscribeFromGame) {
+                    unsubscribeFromGame();
+                    unsubscribeFromGame = null;
+                }
+
+                resetButton.classList.remove('hidden');
+                saveButton.classList.remove('hidden');
+                gameReflection.classList.add('hidden');
+                updateDisplay();
+                showMessageBox('New Game Created!', `A new game has started.`);
+                console.log(`New game created with ID: ${newGameId}`);
+
+                unsubscribeFromGame = onSnapshot(gameRef, (docSnapshot) => {
+                    if (docSnapshot.exists()) {
+                        const updatedData = docSnapshot.data();
+                        if (updatedData.lastUpdatedBy !== userId) {
+                            currentScenarioId = updatedData.currentScenarioId;
+                            cohesionScore = updatedData.cohesionScore;
+                            taskProgress = updatedData.taskProgress;
+                            updateDisplay();
+                            showMessageBox('Game Updated!', `Game updated by another player.`);
+                        }
+                    } else {
+                        showMessageBox('Game Ended', 'The game you were playing has been deleted or ended by another participant.');
+                        resetGame();
+                    }
+                }, (error) => {
+                    console.error("Error listening to game updates:", error);
+                    showMessageBox('Real-time Error', 'Failed to listen for game updates.');
+                });
+
+            } catch (error) {
+                console.error("Error creating new game: ", error);
+                showMessageBox('Creation Error', 'Failed to create new game. Please try again.');
+            }
+        }
+
+        async function resetGame() {
+            if (unsubscribeFromGame) {
+                unsubscribeFromGame();
+                unsubscribeFromGame = null;
+            }
+
+            if (currentGameId) {
+                try {
+                    await setDoc(doc(db, `artifacts/${appId}/public/data/games`, currentGameId), {}, { merge: false }); 
+                    showMessageBox('Game Deleted', `The current game has been reset.`);
+                    console.log(`Game ${currentGameId} reset/cleared.`);
+                } catch (error) {
+                    console.error("Error deleting game: ", error);
+                    showMessageBox('Deletion Error', 'Failed to delete game from server.');
+                }
+            }
+
+            await createNewGame();
+        }
+
+        saveButton.addEventListener('click', saveGame);
+        resetButton.addEventListener('click', resetGame);
+
+        async function initializeFirebaseAndAuth() {
+            console.log("Initializing Firebase and Authentication...");
+            try {
+                if (!firebaseConfig) {
+                    console.error("Firebase configuration is missing. Cannot initialize Firebase.");
+                    showMessageBox('Initialization Error', 'Firebase configuration not found. Please ensure the environment provides __firebase_config.');
+                    return;
+                }
+                
+                app = initializeApp(firebaseConfig);
+                analytics = getAnalytics(app);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                console.log("Firebase app initialized.");
+
+                await signInAnonymously(auth);
+                console.log("Attempted anonymous sign-in.");
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        userIdDisplay.textContent = userId;
+                        console.log(`User authenticated with ID: ${userId}`);
+
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const gameIdFromUrl = urlParams.get('gameId');
+
+                        if (gameIdFromUrl) {
+                            console.log(`Loading game from URL: ${gameIdFromUrl}`);
+                            await loadGame(gameIdFromUrl);
+                        } else {
+                            console.log("No game ID in URL, creating a new game.");
+                            await createNewGame();
+                        }
+                    } else {
+                        userId = 'anonymous_fallback_' + crypto.randomUUID(); 
+                        userIdDisplay.textContent = userId;
+                        console.warn("User not authenticated, using fallback anonymous ID.");
+                        
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const gameIdFromUrl = urlParams.get('gameId');
+                        if (!gameIdFromUrl) {
+                             console.log("No game ID in URL and no user, creating a new game.");
+                             await createNewGame();
+                        }
+                    }
+                    updateDisplay(); 
+                    console.log("Display updated after auth state change.");
+                });
+            } catch (error) {
+                console.error("Error during Firebase initialization or authentication setup: ", error);
+                showMessageBox('Initialization Error', 'Failed to initialize the game. Please check your connection and ensure Firebase is correctly set up.');
+            }
+        }
+
+        window.onload = initializeFirebaseAndAuth;
+    </script>
 </body>
 </html>
